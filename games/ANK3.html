@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 સંખ્યા જ્ઞાન - Interactive Game | Online Education Guru</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #6366f1;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 12px;
+            color: white;
+            min-width: 80px;
+        }
+
+        .stat-item.points { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-item.streak { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .stat-item.level { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+
+        .stat-value { font-size: 1.6em; font-weight: bold; }
+        .stat-label { font-size: 0.8em; opacity: 0.9; }
+
+        .place-chart {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .place-chart h3 {
+            text-align: center;
+            color: #6366f1;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .chart-table {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            min-width: fit-content;
+        }
+
+        .place-box {
+            text-align: center;
+            padding: 8px 5px;
+            border-radius: 8px;
+            min-width: 48px;
+            transition: all 0.3s;
+        }
+
+        .place-box.arab { background: #2c3e50; color: white; }
+        .place-box.ten-crore { background: #8e44ad; color: white; }
+        .place-box.crore { background: #ff6b6b; color: white; }
+        .place-box.ten-lakh { background: #feca57; color: #333; }
+        .place-box.lakh { background: #48dbfb; color: #333; }
+        .place-box.ten-thousand { background: #ff9ff3; color: #333; }
+        .place-box.thousand { background: #54a0ff; color: white; }
+        .place-box.hundred { background: #5f27cd; color: white; }
+        .place-box.ten { background: #00d2d3; color: white; }
+        .place-box.unit { background: #1dd1a1; color: white; }
+
+        .place-box .digit { font-size: 1.5em; font-weight: bold; display: block; }
+        .place-box .name { font-size: 0.6em; margin-top: 3px; }
+
+        .place-box.highlight {
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(255,255,0,0.8);
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            padding: 10px 6px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .mode-btn:nth-child(1) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .mode-btn:nth-child(2) { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .mode-btn:nth-child(3) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .mode-btn:nth-child(4) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .mode-btn:nth-child(5) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .mode-btn:nth-child(6) { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .mode-btn:nth-child(7) { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); }
+        .mode-btn:nth-child(8) { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); color: #333; }
+        .mode-btn:nth-child(9) { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); color: #333; }
+        .mode-btn:nth-child(10) { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+        .mode-btn:nth-child(11) { background: linear-gradient(135deg, #fddb92 0%, #d1fdff 100%); color: #333; }
+        .mode-btn:nth-child(12) { background: linear-gradient(135deg, #c1dfc4 0%, #deecdd 100%); color: #333; }
+
+        .mode-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .mode-btn.active { transform: scale(1.03); box-shadow: 0 0 12px rgba(255,255,255,0.5); border: 2px solid white; }
+
+        .level-selector {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .level-selector h3 { color: #6366f1; margin-bottom: 12px; font-size: 1.1em; }
+
+        .level-btns {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .level-btn {
+            padding: 8px 15px;
+            border: 2px solid #6366f1;
+            border-radius: 8px;
+            background: white;
+            color: #6366f1;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .level-btn.active, .level-btn:hover { background: #6366f1; color: white; }
+
+        .question-area {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .question-number {
+            font-size: 1.8em;
+            color: #6366f1;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            word-break: break-all;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            padding: 15px 10px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            word-break: break-all;
+        }
+
+        .option-btn:hover { border-color: #6366f1; background: #f0f0ff; transform: scale(1.02); }
+        .option-btn.correct { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-color: #11998e; color: white; }
+        .option-btn.wrong { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); border-color: #eb3349; color: white; }
+
+        .ordering-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .order-item {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .order-item:hover { transform: scale(1.05); }
+        .order-item.selected { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+
+        .answer-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 15px;
+            min-height: 50px;
+            padding: 12px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            border: 3px dashed #6366f1;
+        }
+
+        .slot-item {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #333;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .answer-input {
+            padding: 12px 20px;
+            font-size: 1.2em;
+            border: 3px solid #6366f1;
+            border-radius: 12px;
+            text-align: center;
+            width: 180px;
+        }
+
+        .submit-btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover { transform: scale(1.05); }
+
+        .clear-btn {
+            padding: 12px 20px;
+            font-size: 1em;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); color: #1a5928; display: block; }
+        .feedback.wrong { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #8b0000; display: block; }
+
+        .next-btn {
+            display: none;
+            margin: 15px auto 0;
+            padding: 12px 35px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .next-btn:hover { transform: scale(1.05); }
+
+        .progress-container {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            height: 18px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .achievement-popup.show { transform: translate(-50%, -50%) scale(1); }
+        .achievement-popup .emoji { font-size: 4em; margin-bottom: 15px; }
+        .achievement-popup h2 { color: #6366f1; margin-bottom: 10px; }
+        .achievement-popup p { color: #666; margin-bottom: 15px; }
+        .achievement-popup button {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.show { display: block; }
+
+        .leaderboard {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .leaderboard h3 { text-align: center; color: #6366f1; margin-bottom: 12px; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
+        .leaderboard-item:last-child { border-bottom: none; }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            margin-top: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .footer p { color: #6366f1; font-weight: bold; font-size: 1em; }
+        .footer .brand {
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .number-words {
+            text-align: center;
+            padding: 12px;
+            background: #fff3cd;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 1em;
+            color: #856404;
+        }
+
+        .sound-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 1.3em;
+            z-index: 100;
+        }
+
+        .protection-msg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 15px;
+            z-index: 10000;
+            display: none;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.3em; }
+            .question-number { font-size: 1.4em; letter-spacing: 1px; padding: 12px; }
+            .options-grid { grid-template-columns: 1fr; }
+            .place-box { min-width: 38px; padding: 6px 3px; }
+            .place-box .digit { font-size: 1.2em; }
+            .place-box .name { font-size: 0.5em; }
+            .stat-item { min-width: 70px; padding: 8px 10px; }
+            .stat-value { font-size: 1.2em; }
+            .mode-btn { font-size: 0.7em; padding: 8px 4px; }
+            .game-modes { grid-template-columns: repeat(3, 1fr); }
+            .level-btn { padding: 6px 10px; font-size: 0.75em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sound-toggle" onclick="toggleSound()">🔊</div>
+    <div class="protection-msg" id="protectionMsg">⚠️ આ સામગ્રી સુરક્ષિત છે!</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎮 સંખ્યા જ્ઞાન - Interactive Game 🎯</h1>
+            <p>એકમથી અબજ સુધી - રમતા રમતા શીખો!</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item points">
+                <div class="stat-value" id="points">0</div>
+                <div class="stat-label">પોઈન્ટ્સ 💎</div>
+            </div>
+            <div class="stat-item streak">
+                <div class="stat-value" id="streak">0</div>
+                <div class="stat-label">સિરીઝ 🔥</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="correct">0</div>
+                <div class="stat-label">સાચા ✓</div>
+            </div>
+            <div class="stat-item level">
+                <div class="stat-value" id="currentLevel">1</div>
+                <div class="stat-label">લેવલ ⭐</div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <div class="level-selector">
+            <h3>🎚️ મુશ્કેલી પસંદ કરો</h3>
+            <div class="level-btns">
+                <button class="level-btn active" onclick="setDifficulty('easy')">સરળ (1-999)</button>
+                <button class="level-btn" onclick="setDifficulty('medium')">મધ્યમ (1-99,999)</button>
+                <button class="level-btn" onclick="setDifficulty('hard')">કઠિન (1-99,99,999)</button>
+                <button class="level-btn" onclick="setDifficulty('expert')">નિષ્ણાત (1-99,99,99,999)</button>
+            </div>
+        </div>
+
+        <div class="place-chart">
+            <h3>📊 સ્થાનિક મૂલ્ય ચાર્ટ (એકમથી અબજ સુધી)</h3>
+            <div class="chart-table" id="placeChart">
+                <div class="place-box arab"><span class="digit" id="digit-arab">-</span><span class="name">અબજ</span></div>
+                <div class="place-box ten-crore"><span class="digit" id="digit-ten-crore">-</span><span class="name">દસ કરોડ</span></div>
+                <div class="place-box crore"><span class="digit" id="digit-crore">-</span><span class="name">કરોડ</span></div>
+                <div class="place-box ten-lakh"><span class="digit" id="digit-ten-lakh">-</span><span class="name">દસ લાખ</span></div>
+                <div class="place-box lakh"><span class="digit" id="digit-lakh">-</span><span class="name">લાખ</span></div>
+                <div class="place-box ten-thousand"><span class="digit" id="digit-ten-thousand">-</span><span class="name">દસ હજાર</span></div>
+                <div class="place-box thousand"><span class="digit" id="digit-thousand">-</span><span class="name">હજાર</span></div>
+                <div class="place-box hundred"><span class="digit" id="digit-hundred">-</span><span class="name">સો</span></div>
+                <div class="place-box ten"><span class="digit" id="digit-ten">-</span><span class="name">દસક</span></div>
+                <div class="place-box unit"><span class="digit" id="digit-unit">-</span><span class="name">એકમ</span></div>
+            </div>
+        </div>
+
+        <div class="game-modes">
+            <button class="mode-btn active" onclick="setGameMode('identify')">🔍 અંક ઓળખો</button>
+            <button class="mode-btn" onclick="setGameMode('place')">📍 સ્થાન શોધો</button>
+            <button class="mode-btn" onclick="setGameMode('value')">💰 મૂલ્ય ગણો</button>
+            <button class="mode-btn" onclick="setGameMode('expand')">📝 વિસ્તાર કરો</button>
+            <button class="mode-btn" onclick="setGameMode('compare')">⚖️ સરખામણી</button>
+            <button class="mode-btn" onclick="setGameMode('ascending')">📈 ચડતો ક્રમ</button>
+            <button class="mode-btn" onclick="setGameMode('descending')">📉 ઉતરતો ક્રમ</button>
+            <button class="mode-btn" onclick="setGameMode('smallest')">🔻 નાની સંખ્યા</button>
+            <button class="mode-btn" onclick="setGameMode('largest')">🔺 મોટી સંખ્યા</button>
+            <button class="mode-btn" onclick="setGameMode('predecessor')">⬅️ પુરોગામી</button>
+            <button class="mode-btn" onclick="setGameMode('successor')">➡️ અનુગામી</button>
+            <button class="mode-btn" onclick="setGameMode('oddeven')">🔢 યુગ્મ-અયુગ્મ</button>
+        </div>
+
+        <div class="question-area">
+            <div class="question-text" id="questionText">પ્રશ્ન લોડ થઈ રહ્યો છે...</div>
+            <div class="question-number" id="questionNumber">12,345</div>
+            <div class="number-words" id="numberWords" style="display: none;"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+            
+            <div id="orderingArea" style="display: none;">
+                <div class="ordering-options" id="orderingOptions"></div>
+                <p style="text-align: center; color: #666; margin: 10px 0; font-size: 0.9em;">👆 ક્રમમાં ગોઠવવા નંબર પર ક્લિક કરો</p>
+                <div class="answer-slots" id="answerSlots">
+                    <span style="color: #999;">અહીં ક્રમ દેખાશે...</span>
+                </div>
+                <div class="input-area">
+                    <button class="clear-btn" onclick="clearOrder()">🔄 ફરીથી</button>
+                    <button class="submit-btn" onclick="checkOrderAnswer()">જવાબ તપાસો ✓</button>
+                </div>
+            </div>
+            
+            <div class="input-area" id="inputArea" style="display: none;">
+                <input type="text" class="answer-input" id="answerInput" placeholder="જવાબ લખો...">
+                <button class="submit-btn" onclick="checkInputAnswer()">જવાબ આપો ➤</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">આગળનો પ્રશ્ન ➤</button>
+        </div>
+
+        <div class="leaderboard">
+            <h3>🏆 તમારો રેકોર્ડ</h3>
+            <div class="leaderboard-item">
+                <span>🥇 સર્વશ્રેષ્ઠ સ્કોર</span>
+                <span id="bestScore">0</span>
+            </div>
+            <div class="leaderboard-item">
+                <span>🔥 શ્રેષ્ઠ સિરીઝ</span>
+                <span id="bestStreak">0</span>
+            </div>
+            <div class="leaderboard-item">
+                <span>📊 કુલ પ્રશ્નો</span>
+                <span id="totalQuestions">0</span>
+            </div>
+            <div class="leaderboard-item">
+                <span>✅ સચોટતા</span>
+                <span id="accuracy">0%</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>✨ Created by ✨</p>
+            <p class="brand">🎓 Online Education Guru 🎓</p>
+            <p style="font-size: 0.85em; color: #888; margin-top: 10px;">© 2024 All Rights Reserved</p>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="emoji" id="achievementEmoji">🎉</div>
+        <h2 id="achievementTitle">અભિનંદન!</h2>
+        <p id="achievementText">તમે 10 સાચા જવાબ આપ્યા!</p>
+        <button onclick="closeAchievement()">ચાલુ રાખો 🚀</button>
+    </div>
+
+    <script>
+        // ============= PROTECTION CODE =============
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showProtectionMsg();
+            return false;
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'p')) ||
+                (e.ctrlKey && e.key === 'c' && e.target.tagName !== 'INPUT')) {
+                e.preventDefault();
+                showProtectionMsg();
+                return false;
+            }
+        });
+
+        document.addEventListener('copy', function(e) { e.preventDefault(); showProtectionMsg(); return false; });
+        document.addEventListener('cut', function(e) { e.preventDefault(); showProtectionMsg(); return false; });
+        document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('selectstart', function(e) { if (e.target.tagName !== 'INPUT') { e.preventDefault(); return false; } });
+
+        function showProtectionMsg() {
+            const msg = document.getElementById('protectionMsg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 2000);
+        }
+
+        // ============= GAME CODE =============
+        
+        let gameState = {
+            points: 0,
+            streak: 0,
+            correct: 0,
+            wrong: 0,
+            totalPlayed: 0,
+            bestScore: parseInt(localStorage.getItem('oeg_bestScore')) || 0,
+            bestStreak: parseInt(localStorage.getItem('oeg_bestStreak')) || 0,
+            currentLevel: 1,
+            difficulty: 'easy',
+            gameMode: 'identify',
+            currentNumber: 0,
+            correctAnswer: null,
+            answered: false,
+            soundEnabled: true,
+            orderNumbers: [],
+            selectedOrder: []
+        };
+
+        // Place Names - Extended to Arab (અબજ)
+        const placeNames = {
+            'unit': 'એકમ',
+            'ten': 'દસક',
+            'hundred': 'સો',
+            'thousand': 'હજાર',
+            'ten-thousand': 'દસ હજાર',
+            'lakh': 'લાખ',
+            'ten-lakh': 'દસ લાખ',
+            'crore': 'કરોડ',
+            'ten-crore': 'દસ કરોડ',
+            'arab': 'અબજ'
+        };
+
+        // Place Values - Extended to Arab
+        const placeValues = {
+            'unit': 1,
+            'ten': 10,
+            'hundred': 100,
+            'thousand': 1000,
+            'ten-thousand': 10000,
+            'lakh': 100000,
+            'ten-lakh': 1000000,
+            'crore': 10000000,
+            'ten-crore': 100000000,
+            'arab': 1000000000
+        };
+
+        const placeOrder = ['arab', 'ten-crore', 'crore', 'ten-lakh', 'lakh', 'ten-thousand', 'thousand', 'hundred', 'ten', 'unit'];
+
+        let audioContext;
+
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            if (!audioContext) initAudio();
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'correct') {
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+                } else if (type === 'wrong') {
+                    oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+                } else if (type === 'click') {
+                    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                }
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            document.querySelector('.sound-toggle').textContent = gameState.soundEnabled ? '🔊' : '🔇';
+        }
+
+        // Generate Random Number based on difficulty - Extended ranges
+        function generateNumber() {
+            let max, min = 1;
+            switch(gameState.difficulty) {
+                case 'easy': max = 999; break;
+                case 'medium': max = 99999; break;
+                case 'hard': max = 9999999; break;
+                case 'expert': max = 9999999999; break;
+                default: max = 999;
+            }
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateMultipleNumbers(count) {
+            const numbers = new Set();
+            while(numbers.size < count) {
+                numbers.add(generateNumber());
+            }
+            return Array.from(numbers);
+        }
+
+        // Format number with Indian numbering system - Extended for larger numbers
+        function formatNumber(num) {
+            if (num === undefined || num === null) return '0';
+            let str = num.toString();
+            let result = '';
+            let len = str.length;
+            
+            // Indian numbering: last 3 digits, then groups of 2
+            if (len <= 3) {
+                return str;
+            }
+            
+            // Last 3 digits
+            result = str.slice(-3);
+            str = str.slice(0, -3);
+            
+            // Remaining digits in groups of 2
+            while (str.length > 0) {
+                if (str.length >= 2) {
+                    result = str.slice(-2) + ',' + result;
+                    str = str.slice(0, -2);
+                } else {
+                    result = str + ',' + result;
+                    str = '';
+                }
+            }
+            
+            return result;
+        }
+
+        function getDigitAtPlace(num, place) {
+            const divisor = placeValues[place];
+            return Math.floor(num / divisor) % 10;
+        }
+
+        // Update Place Chart - Extended for 10 places
+        function updatePlaceChart(num, highlightPlace = null) {
+            const str = num.toString().padStart(10, '0');
+            const places = ['arab', 'ten-crore', 'crore', 'ten-lakh', 'lakh', 'ten-thousand', 'thousand', 'hundred', 'ten', 'unit'];
+            
+            places.forEach((place, index) => {
+                const digit = parseInt(str[index]);
+                const element = document.getElementById(`digit-${place}`);
+                if (!element) return;
+                
+                const box = element.parentElement;
+                
+                if (num >= placeValues[place] || (index === 9 && num > 0)) {
+                    element.textContent = digit;
+                    box.style.opacity = '1';
+                } else {
+                    element.textContent = '-';
+                    box.style.opacity = '0.3';
+                }
+                
+                box.classList.remove('highlight');
+                if (place === highlightPlace) {
+                    box.classList.add('highlight');
+                }
+            });
+        }
+
+        function setDifficulty(diff) {
+            gameState.difficulty = diff;
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            playSound('click');
+            generateQuestion();
+        }
+
+        function setGameMode(mode) {
+            gameState.gameMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            playSound('click');
+            generateQuestion();
+        }
+
+        function hideAllAreas() {
+            document.getElementById('optionsGrid').style.display = 'none';
+            document.getElementById('inputArea').style.display = 'none';
+            document.getElementById('orderingArea').style.display = 'none';
+            document.getElementById('numberWords').style.display = 'none';
+        }
+
+        function generateQuestion() {
+            gameState.answered = false;
+            gameState.currentNumber = generateNumber();
+            gameState.selectedOrder = [];
+            
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            hideAllAreas();
+            
+            switch(gameState.gameMode) {
+                case 'identify': generateIdentifyQuestion(); break;
+                case 'place': generatePlaceQuestion(); break;
+                case 'value': generateValueQuestion(); break;
+                case 'expand': generateExpandQuestion(); break;
+                case 'compare': generateCompareQuestion(); break;
+                case 'ascending': generateAscendingQuestion(); break;
+                case 'descending': generateDescendingQuestion(); break;
+                case 'smallest': generateSmallestQuestion(); break;
+                case 'largest': generateLargestQuestion(); break;
+                case 'predecessor': generatePredecessorQuestion(); break;
+                case 'successor': generateSuccessorQuestion(); break;
+                case 'oddeven': generateOddEvenQuestion(); break;
+            }
+        }
+
+        function generateIdentifyQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            const availablePlaces = getAvailablePlaces(gameState.currentNumber);
+            const randomPlace = availablePlaces[Math.floor(Math.random() * availablePlaces.length)];
+            
+            const correctDigit = getDigitAtPlace(gameState.currentNumber, randomPlace);
+            gameState.correctAnswer = correctDigit;
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(gameState.currentNumber)}</strong> માં <span style="color: #6366f1; font-weight: bold;">${placeNames[randomPlace]}</span>ના સ્થાને કયો અંક છે?`;
+            document.getElementById('questionNumber').textContent = formatNumber(gameState.currentNumber);
+            
+            updatePlaceChart(gameState.currentNumber, randomPlace);
+            
+            let options = [correctDigit];
+            while (options.length < 4) {
+                const randomDigit = Math.floor(Math.random() * 10);
+                if (!options.includes(randomDigit)) {
+                    options.push(randomDigit);
+                }
+            }
+            options = shuffleArray(options);
+            
+            displayOptions(options, correctDigit);
+        }
+
+        function generatePlaceQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            const availablePlaces = getAvailablePlaces(gameState.currentNumber);
+            const randomPlace = availablePlaces[Math.floor(Math.random() * availablePlaces.length)];
+            const digit = getDigitAtPlace(gameState.currentNumber, randomPlace);
+            
+            gameState.correctAnswer = placeNames[randomPlace];
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(gameState.currentNumber)}</strong> માં <span style="color: #e74c3c; font-weight: bold; font-size: 1.2em;">${digit}</span> અંક ક્યા સ્થાને છે? (ડાબેથી)`;
+            document.getElementById('questionNumber').textContent = formatNumber(gameState.currentNumber);
+            
+            updatePlaceChart(gameState.currentNumber, randomPlace);
+            
+            let options = [placeNames[randomPlace]];
+            const allPlaceNames = Object.values(placeNames);
+            while (options.length < 4) {
+                const randomName = allPlaceNames[Math.floor(Math.random() * allPlaceNames.length)];
+                if (!options.includes(randomName)) {
+                    options.push(randomName);
+                }
+            }
+            options = shuffleArray(options);
+            
+            displayOptions(options, placeNames[randomPlace]);
+        }
+
+        function generateValueQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            const availablePlaces = getAvailablePlaces(gameState.currentNumber);
+            const randomPlace = availablePlaces[Math.floor(Math.random() * availablePlaces.length)];
+            const digit = getDigitAtPlace(gameState.currentNumber, randomPlace);
+            const value = digit * placeValues[randomPlace];
+            
+            gameState.correctAnswer = value;
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(gameState.currentNumber)}</strong> માં ${placeNames[randomPlace]}ના સ્થાને રહેલા <span style="color: #e74c3c; font-weight: bold;">${digit}</span>નું સ્થાનિક મૂલ્ય શું થાય?`;
+            document.getElementById('questionNumber').textContent = formatNumber(gameState.currentNumber);
+            
+            updatePlaceChart(gameState.currentNumber, randomPlace);
+            
+            let options = [value];
+            const multipliers = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000];
+            while (options.length < 4) {
+                const randomValue = digit * multipliers[Math.floor(Math.random() * multipliers.length)];
+                if (!options.includes(randomValue) && randomValue > 0) {
+                    options.push(randomValue);
+                }
+            }
+            options = shuffleArray(options);
+            
+            displayOptions(options.map(formatNumber), formatNumber(value));
+        }
+
+        function generateExpandQuestion() {
+            document.getElementById('inputArea').style.display = 'flex';
+            
+            const availablePlaces = getAvailablePlaces(gameState.currentNumber);
+            const randomPlace = availablePlaces[Math.floor(Math.random() * availablePlaces.length)];
+            const digit = getDigitAtPlace(gameState.currentNumber, randomPlace);
+            const value = digit * placeValues[randomPlace];
+            
+            gameState.correctAnswer = value.toString();
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(gameState.currentNumber)}</strong> ના વિસ્તૃત સ્વરૂપમાં ${placeNames[randomPlace]}નું મૂલ્ય લખો:<br><small style="color: #888;">(${digit} × ${formatNumber(placeValues[randomPlace])} = ?)</small>`;
+            document.getElementById('questionNumber').textContent = formatNumber(gameState.currentNumber);
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+            
+            updatePlaceChart(gameState.currentNumber, randomPlace);
+        }
+
+        function generateCompareQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            const num1 = gameState.currentNumber;
+            const num2 = generateNumber();
+            
+            let correctSymbol;
+            if (num1 > num2) correctSymbol = '>';
+            else if (num1 < num2) correctSymbol = '<';
+            else correctSymbol = '=';
+            
+            gameState.correctAnswer = correctSymbol;
+            
+            document.getElementById('questionText').innerHTML = `બે સંખ્યાઓની સરખામણી કરો:`;
+            document.getElementById('questionNumber').innerHTML = 
+                `${formatNumber(num1)} <span style="color: #e74c3c;">?</span> ${formatNumber(num2)}`;
+            
+            updatePlaceChart(num1);
+            
+            const options = ['>', '<', '='];
+            const labels = ['મોટી (>)', 'નાની (<)', 'સરખી (=)'];
+            displayOptionsWithLabels(options, labels, correctSymbol);
+        }
+
+        function generateAscendingQuestion() {
+            document.getElementById('orderingArea').style.display = 'block';
+            
+            const count = gameState.difficulty === 'easy' ? 4 : (gameState.difficulty === 'medium' ? 5 : 6);
+            gameState.orderNumbers = generateMultipleNumbers(count);
+            gameState.correctAnswer = [...gameState.orderNumbers].sort((a, b) => a - b);
+            
+            document.getElementById('questionText').innerHTML = 
+                `નીચેની સંખ્યાઓને <span style="color: #11998e; font-weight: bold;">ચડતા ક્રમમાં</span> (નાનીથી મોટી) ગોઠવો:`;
+            document.getElementById('questionNumber').textContent = '📈 ચડતો ક્રમ';
+            
+            updatePlaceChart(gameState.orderNumbers[0]);
+            displayOrderingOptions();
+        }
+
+        function generateDescendingQuestion() {
+            document.getElementById('orderingArea').style.display = 'block';
+            
+            const count = gameState.difficulty === 'easy' ? 4 : (gameState.difficulty === 'medium' ? 5 : 6);
+            gameState.orderNumbers = generateMultipleNumbers(count);
+            gameState.correctAnswer = [...gameState.orderNumbers].sort((a, b) => b - a);
+            
+            document.getElementById('questionText').innerHTML = 
+                `નીચેની સંખ્યાઓને <span style="color: #eb3349; font-weight: bold;">ઉતરતા ક્રમમાં</span> (મોટીથી નાની) ગોઠવો:`;
+            document.getElementById('questionNumber').textContent = '📉 ઉતરતો ક્રમ';
+            
+            updatePlaceChart(gameState.orderNumbers[0]);
+            displayOrderingOptions();
+        }
+
+        function generateSmallestQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            
+            const numbers = generateMultipleNumbers(4);
+            const smallest = Math.min(...numbers);
+            
+            gameState.correctAnswer = smallest;
+            
+            document.getElementById('questionText').innerHTML = 
+                `નીચેની સંખ્યાઓમાંથી <span style="color: #11998e; font-weight: bold;">સૌથી નાની સંખ્યા</span> કઈ છે?`;
+            document.getElementById('questionNumber').textContent = '🔻 સૌથી નાની શોધો';
+            
+            updatePlaceChart(smallest);
+            displayOptions(numbers.map(formatNumber), formatNumber(smallest));
+        }
+
+        function generateLargestQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            
+            const numbers = generateMultipleNumbers(4);
+            const largest = Math.max(...numbers);
+            
+            gameState.correctAnswer = largest;
+            
+            document.getElementById('questionText').innerHTML = 
+                `નીચેની સંખ્યાઓમાંથી <span style="color: #eb3349; font-weight: bold;">સૌથી મોટી સંખ્યા</span> કઈ છે?`;
+            document.getElementById('questionNumber').textContent = '🔺 સૌથી મોટી શોધો';
+            
+            updatePlaceChart(largest);
+            displayOptions(numbers.map(formatNumber), formatNumber(largest));
+        }
+
+        function generatePredecessorQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            
+            const num = gameState.currentNumber;
+            const predecessor = num - 1;
+            
+            gameState.correctAnswer = predecessor;
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(num)}</strong> નો <span style="color: #6366f1; font-weight: bold;">પુરોગામી</span> (પહેલાની સંખ્યા) કઈ છે?`;
+            document.getElementById('questionNumber').textContent = formatNumber(num);
+            
+            document.getElementById('numberWords').style.display = 'block';
+            document.getElementById('numberWords').innerHTML = `💡 <strong>યાદ રાખો:</strong> પુરોગામી = આપેલી સંખ્યા - 1`;
+            
+            updatePlaceChart(num);
+            
+            let options = [predecessor, num + 1, num - 2, num + 2];
+            options = shuffleArray(options);
+            
+            displayOptions(options.map(formatNumber), formatNumber(predecessor));
+        }
+
+        function generateSuccessorQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            
+            const num = gameState.currentNumber;
+            const successor = num + 1;
+            
+            gameState.correctAnswer = successor;
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(num)}</strong> નો <span style="color: #6366f1; font-weight: bold;">અનુગામી</span> (પછીની સંખ્યા) કઈ છે?`;
+            document.getElementById('questionNumber').textContent = formatNumber(num);
+            
+            document.getElementById('numberWords').style.display = 'block';
+            document.getElementById('numberWords').innerHTML = `💡 <strong>યાદ રાખો:</strong> અનુગામી = આપેલી સંખ્યા + 1`;
+            
+            updatePlaceChart(num);
+            
+            let options = [successor, num - 1, num + 2, num - 2];
+            options = shuffleArray(options);
+            
+            displayOptions(options.map(formatNumber), formatNumber(successor));
+        }
+
+        function generateOddEvenQuestion() {
+            document.getElementById('optionsGrid').style.display = 'grid';
+            
+            const num = gameState.currentNumber;
+            const isEven = num % 2 === 0;
+            
+            gameState.correctAnswer = isEven ? 'યુગ્મ (Even)' : 'અયુગ્મ (Odd)';
+            
+            document.getElementById('questionText').innerHTML = 
+                `<strong>${formatNumber(num)}</strong> એ કેવી સંખ્યા છે?`;
+            document.getElementById('questionNumber').textContent = formatNumber(num);
+            
+            document.getElementById('numberWords').style.display = 'block';
+            document.getElementById('numberWords').innerHTML = `💡 <strong>યાદ રાખો:</strong> 2 વડે ભાગ જાય = યુગ્મ (Even), ન જાય = અયુગ્મ (Odd)`;
+            
+            updatePlaceChart(num);
+            
+            const options = ['યુગ્મ (Even)', 'અયુગ્મ (Odd)'];
+            displayOptions(options, gameState.correctAnswer);
+        }
+
+        function displayOrderingOptions() {
+            const container = document.getElementById('orderingOptions');
+            container.innerHTML = '';
+            
+            const shuffled = shuffleArray([...gameState.orderNumbers]);
+            shuffled.forEach(num => {
+                const item = document.createElement('div');
+                item.className = 'order-item';
+                item.textContent = formatNumber(num);
+                item.dataset.value = num;
+                item.onclick = () => selectOrderItem(num, item);
+                container.appendChild(item);
+            });
+            
+            updateAnswerSlots();
+        }
+
+        function selectOrderItem(num, element) {
+            if (gameState.answered) return;
+            
+            playSound('click');
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                gameState.selectedOrder = gameState.selectedOrder.filter(n => n !== num);
+            } else {
+                element.classList.add('selected');
+                gameState.selectedOrder.push(num);
+            }
+            
+            updateAnswerSlots();
+        }
+
+        function updateAnswerSlots() {
+            const container = document.getElementById('answerSlots');
+            if (gameState.selectedOrder.length === 0) {
+                container.innerHTML = '<span style="color: #999;">અહીં ક્રમ દેખાશે...</span>';
+            } else {
+                container.innerHTML = '';
+                gameState.selectedOrder.forEach((num, index) => {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot-item';
+                    slot.textContent = formatNumber(num);
+                    slot.onclick = () => {
+                        if (!gameState.answered) {
+                            gameState.selectedOrder.splice(index, 1);
+                            document.querySelectorAll('.order-item').forEach(item => {
+                                if (parseInt(item.dataset.value) === num) {
+                                    item.classList.remove('selected');
+                                }
+                            });
+                            updateAnswerSlots();
+                        }
+                    };
+                    container.appendChild(slot);
+                });
+            }
+        }
+
+        function clearOrder() {
+            if (gameState.answered) return;
+            playSound('click');
+            gameState.selectedOrder = [];
+            document.querySelectorAll('.order-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            updateAnswerSlots();
+        }
+
+        function checkOrderAnswer() {
+            if (gameState.answered) return;
+            if (gameState.selectedOrder.length !== gameState.orderNumbers.length) {
+                alert('કૃપા કરીને બધી સંખ્યાઓ પસંદ કરો!');
+                return;
+            }
+            
+            gameState.answered = true;
+            gameState.totalPlayed++;
+            
+            const isCorrect = JSON.stringify(gameState.selectedOrder) === JSON.stringify(gameState.correctAnswer);
+            
+            if (isCorrect) {
+                handleCorrectAnswer(null);
+            } else {
+                handleWrongAnswer(null);
+                const feedback = document.getElementById('feedback');
+                feedback.innerHTML += `<br>સાચો ક્રમ: ${gameState.correctAnswer.map(formatNumber).join(' → ')}`;
+            }
+            
+            document.getElementById('nextBtn').style.display = 'block';
+            updateStats();
+            saveProgress();
+        }
+
+        function displayOptions(options, correct) {
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            grid.style.display = 'grid';
+            
+            options.forEach((option) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option, correct, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function displayOptionsWithLabels(options, labels, correct) {
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            grid.style.display = 'grid';
+            
+            options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = labels[index];
+                btn.onclick = () => checkAnswer(option, correct, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function getAvailablePlaces(num) {
+            const places = [];
+            placeOrder.forEach(place => {
+                if (num >= placeValues[place] || (place === 'unit' && num > 0)) {
+                    places.push(place);
+                }
+            });
+            return places;
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            if (gameState.answered) return;
+            gameState.answered = true;
+            gameState.totalPlayed++;
+            
+            const isCorrect = selected.toString() === correct.toString();
+            
+            document.querySelectorAll('.option-btn').forEach(b => {
+                b.onclick = null;
+                if (b.textContent == correct || b.textContent.includes(correct.toString())) {
+                    b.classList.add('correct');
+                }
+            });
+            
+            if (isCorrect) {
+                handleCorrectAnswer(btn);
+            } else {
+                handleWrongAnswer(btn);
+            }
+            
+            document.getElementById('nextBtn').style.display = 'block';
+            updateStats();
+            saveProgress();
+        }
+
+        function checkInputAnswer() {
+            if (gameState.answered) return;
+            
+            const input = document.getElementById('answerInput').value.replace(/,/g, '').trim();
+            const isCorrect = input === gameState.correctAnswer;
+            
+            gameState.answered = true;
+            gameState.totalPlayed++;
+            
+            if (isCorrect) {
+                handleCorrectAnswer(null);
+            } else {
+                handleWrongAnswer(null);
+                document.getElementById('feedback').innerHTML += 
+                    `<br>સાચો જવાબ: <strong>${formatNumber(parseInt(gameState.correctAnswer))}</strong>`;
+            }
+            
+            document.getElementById('nextBtn').style.display = 'block';
+            updateStats();
+            saveProgress();
+        }
+
+        function handleCorrectAnswer(btn) {
+            playSound('correct');
+            if (btn) btn.classList.add('correct');
+            
+            gameState.correct++;
+            gameState.streak++;
+            
+            let pointsEarned = 10;
+            if (gameState.difficulty === 'medium') pointsEarned = 20;
+            if (gameState.difficulty === 'hard') pointsEarned = 30;
+            if (gameState.difficulty === 'expert') pointsEarned = 50;
+            pointsEarned += gameState.streak * 2;
+            
+            gameState.points += pointsEarned;
+            
+            if (gameState.streak > gameState.bestStreak) {
+                gameState.bestStreak = gameState.streak;
+            }
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `🎉 શાબાશ! સાચો જવાબ! +${pointsEarned} પોઈન્ટ્સ`;
+            
+            checkAchievements();
+        }
+
+        function handleWrongAnswer(btn) {
+            playSound('wrong');
+            if (btn) btn.classList.add('wrong');
+            
+            gameState.wrong++;
+            gameState.streak = 0;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `❌ ખોટો જવાબ! ફરી પ્રયત્ન કરો.`;
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            generateQuestion();
+        }
+
+        function updateStats() {
+            document.getElementById('points').textContent = gameState.points;
+            document.getElementById('streak').textContent = gameState.streak;
+            document.getElementById('correct').textContent = gameState.correct;
+            
+            gameState.currentLevel = Math.floor(gameState.points / 100) + 1;
+            document.getElementById('currentLevel').textContent = gameState.currentLevel;
+            
+            const progressPercent = (gameState.points % 100);
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('progressBar').textContent = progressPercent + '%';
+            
+            if (gameState.points > gameState.bestScore) {
+                gameState.bestScore = gameState.points;
+            }
+            document.getElementById('bestScore').textContent = gameState.bestScore;
+            document.getElementById('bestStreak').textContent = gameState.bestStreak;
+            document.getElementById('totalQuestions').textContent = gameState.totalPlayed;
+            
+            const accuracy = gameState.totalPlayed > 0 ? 
+                Math.round((gameState.correct / gameState.totalPlayed) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function saveProgress() {
+            localStorage.setItem('oeg_bestScore', gameState.bestScore);
+            localStorage.setItem('oeg_bestStreak', gameState.bestStreak);
+        }
+
+        function checkAchievements() {
+            const achievements = [
+                { condition: gameState.correct === 5, emoji: '🌟', title: 'સારી શરૂઆત!', text: 'તમે 5 સાચા જવાબ આપ્યા!' },
+                { condition: gameState.correct === 10, emoji: '🏆', title: 'અદ્ભુત!', text: 'તમે 10 સાચા જવાબ આપ્યા!' },
+                { condition: gameState.correct === 25, emoji: '👑', title: 'ચેમ્પિયન!', text: 'તમે 25 સાચા જવાબ આપ્યા!' },
+                { condition: gameState.correct === 50, emoji: '🎖️', title: 'માસ્ટર!', text: 'તમે 50 સાચા જવાબ આપ્યા!' },
+                { condition: gameState.streak === 5, emoji: '🔥', title: '5ની સિરીઝ!', text: 'સતત 5 સાચા જવાબ!' },
+                { condition: gameState.streak === 10, emoji: '💥', title: '10ની સિરીઝ!', text: 'સતત 10 સાચા જવાબ!' },
+                { condition: gameState.points >= 100, emoji: '💎', title: '100 પોઈન્ટ્સ!', text: 'તમે 100 પોઈન્ટ્સ મેળવ્યા!' },
+                { condition: gameState.points >= 500, emoji: '💰', title: '500 પોઈન્ટ્સ!', text: 'તમે 500 પોઈન્ટ્સ મેળવ્યા!' },
+                { condition: gameState.points >= 1000, emoji: '🚀', title: '1000 પોઈન્ટ્સ!', text: 'તમે 1000 પોઈન્ટ્સ મેળવ્યા!' }
+            ];
+            
+            for (const achievement of achievements) {
+                const achievedKey = `oeg_achieved_${achievement.title}`;
+                if (achievement.condition && !localStorage.getItem(achievedKey)) {
+                    showAchievement(achievement.emoji, achievement.title, achievement.text);
+                    localStorage.setItem(achievedKey, 'true');
+                    break;
+                }
+            }
+        }
+
+        function showAchievement(emoji, title, text) {
+            document.getElementById('achievementEmoji').textContent = emoji;
+            document.getElementById('achievementTitle').textContent = title;
+            document.getElementById('achievementText').textContent = text;
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('achievementPopup').classList.add('show');
+        }
+
+        function closeAchievement() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('achievementPopup').classList.remove('show');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (gameState.answered) {
+                    nextQuestion();
+                } else if (document.getElementById('inputArea').style.display !== 'none') {
+                    checkInputAnswer();
+                }
+            }
+            
+            if (!gameState.answered && document.getElementById('optionsGrid').style.display !== 'none') {
+                const options = document.querySelectorAll('.option-btn');
+                if (e.key >= '1' && e.key <= '4' && options[e.key - 1]) {
+                    options[e.key - 1].click();
+                }
+            }
+        });
+
+        // Initialize
+        updateStats();
+        generateQuestion();
+
+        console.log('%c⚠️ રોકો!', 'color: red; font-size: 50px; font-weight: bold;');
+        console.log('%cઆ સામગ્રી Online Education Guru દ્વારા સુરક્ષિત છે.', 'color: blue; font-size: 20px;');
+    </script>
+</body>
+</html>
